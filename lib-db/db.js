@@ -15,7 +15,14 @@ export function connectToDatabase() {
 
 export async function insertUserCredentials(client, document) {
     const db = client.db('user-auth');
-    const collection = await db.collection('user');
+    const collection = await db.collection('users');
     const result = await collection.insertOne(document);
+    return result;
+}
+
+export async function checkUserExists(client, email){
+    const db = client.db('user-auth');
+    const collection = await db.collection('users');
+    const result = await collection.findOne({email: email});
     return result;
 }

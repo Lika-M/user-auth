@@ -1,36 +1,48 @@
 const bcrypt = require('bcrypt');
 
-import { connectToDatabase, insertUserCredentials } from "../../../lib-db/db.js";
+import { checkUserExists, connectToDatabase, insertUserCredentials } from "../../../lib-db/db.js";
 
 async function handler(req, res) {
 
     if (req.method === "POST") {
-    
+
         const { email, password } = req.body;
-        const isInvalid = !email || !password || !email.includes('@') || password.trim().length <6;
+        const isInvalid = !email || !password || !email.includes('@') || password.trim().length < 6;
 
         if (isInvalid) {
             res.status(422).json({ message: 'Invalid user data.' });
             return;
         }
 
+        let client;
+
+        try {
+            client = await connectToDatabase();
+            console.log('connected')
+        } catch (error) {
+            res.status(500).json({ message: "DB connection failed." });
+            await client.close();
+            return;
+        } 
+
+        try {
+            const existingUser = await checkUserExists(client, email);
+            if (existingUser) {
+                res.status(422).json({ message: 'User registered already.' });
+                return;
+            }
+        } catch (error) {
+            res.status(500).json({ message: "DB connection failed." });
+            await client.close();
+            return;
+        } 
+
         const hashedPass = await bcrypt.hash(password, 12);
-        console.log(hashedPass)
 
         const userData = {
             email,
             password: hashedPass,
             createdAt: new Date().toISOString()
-        }
-
-        let client;
-
-        try {
-            client = await connectToDatabase();
-        } catch (error) {
-            res.status(500).json({ message: "DB connection failed." });
-            await client.close();
-            return;
         }
 
         try {
@@ -41,6 +53,7 @@ async function handler(req, res) {
             await client.close();
             return;
         } 
+
     } else {
         res.status(422).json({ message: 'Invalid method' })
     }
