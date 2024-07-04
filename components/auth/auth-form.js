@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { signIn } from 'next-auth/react';
 
 import { createUser } from '../../lib-db/util';
 import classes from './auth-form.module.css';
@@ -14,15 +15,40 @@ function AuthForm() {
 
     const enteredEmail = inputEmail.current.value;
     const enteredPassword = inputPassword.current.value;
+    const isInvalid = !enteredEmail || !enteredPassword || !enteredEmail.includes('@') || enteredPassword.trim().length < 6;
 
-    //Client-side validation here
+    if (isInvalid) {
+      alert('Enter valid input!')
+      return;
+    }
 
     const userData = {
       email: enteredEmail,
       password: enteredPassword
-    }
+    };
 
-    await createUser(userData);
+    if (!isLogin) {
+      try {
+        await createUser(userData);
+      } catch (error) {
+        console.log(error);
+      }
+
+    } else {
+      try {
+        // or error
+        const result = await signIn('credentials', {
+          email: enteredEmail,
+          password: enteredPassword,
+          redirect: false
+        });
+
+        console.log(result);
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 
   function switchAuthModeHandler() {

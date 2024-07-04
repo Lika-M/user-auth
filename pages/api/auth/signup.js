@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+module.exports = bcrypt;
 
 import { checkUserExists, connectToDatabase, insertUserCredentials } from "../../../lib-db/db.js";
 
@@ -23,7 +24,7 @@ async function handler(req, res) {
             res.status(500).json({ message: "DB connection failed." });
             await client.close();
             return;
-        } 
+        }
 
         try {
             const existingUser = await checkUserExists(client, email);
@@ -35,7 +36,7 @@ async function handler(req, res) {
             res.status(500).json({ message: "DB connection failed." });
             await client.close();
             return;
-        } 
+        }
 
         const hashedPass = await bcrypt.hash(password, 12);
 
@@ -52,7 +53,7 @@ async function handler(req, res) {
             res.status(500).json({ message: error.message })
             await client.close();
             return;
-        } 
+        }
 
     } else {
         res.status(422).json({ message: 'Invalid method' })
