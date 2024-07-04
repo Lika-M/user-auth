@@ -1,7 +1,7 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://user:kaQ2vugMJ56JhTg2@atlascluster.tcca3nt.mongodb.net/?appName=AtlasCluster";
+const { uri } = require('../config.js');
 
-export function connectToDatabase() {
+export async function connectToDatabase() {
     const client = new MongoClient(uri, {
         serverApi: {
             version: ServerApiVersion.v1,
@@ -10,7 +10,14 @@ export function connectToDatabase() {
         }
     });
 
-    return client.connect();
+    try {
+        await client.connect();
+        console.log("Connected successfully to database");
+        return client;
+    } catch (error) {
+        console.error("Database connection failed:", error);
+        throw new Error("DB connection failed.");
+    }
 }
 
 export async function insertUserCredentials(client, document) {
@@ -20,9 +27,9 @@ export async function insertUserCredentials(client, document) {
     return result;
 }
 
-export async function checkUserExists(client, email){
+export async function checkUserExists(client, email) {
     const db = client.db('user-auth');
     const collection = await db.collection('users');
-    const result = await collection.findOne({email: email});
+    const result = await collection.findOne({ email: email });
     return result;
 }
