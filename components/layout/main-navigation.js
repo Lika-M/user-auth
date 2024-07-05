@@ -17,6 +17,10 @@ function MainNavigation() {
     );
   }
 
+  async function onLogout() {
+    await signOut();
+  }
+
   return (
     <header className={classes.header}>
       <Link href="/">
@@ -34,7 +38,7 @@ function MainNavigation() {
                 <Link href="/profile">Profile</Link>
               </li>
               <li>
-                <button>Logout</button>
+                <button type="button" onClick={onLogout}>Logout</button>
               </li>
             </>}
         </ul>
