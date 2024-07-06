@@ -9,14 +9,6 @@ function MainNavigation() {
   console.log(session); // undefined | null | {user: obj, expires: string}
   console.log(status);  // loading | authenticated | unauthenticated
 
-  if (status === 'loading') {
-    return (
-      <header className={classes.header}>
-        <div className={classes.logo}>Loading...</div>
-      </header>
-    );
-  }
-
   async function onLogout() {
     await signOut();
   }
