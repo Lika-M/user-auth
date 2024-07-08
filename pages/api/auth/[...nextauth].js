@@ -1,24 +1,24 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
-
+import { connectToDatabase } from '../../../lib-db/db.js';
 const bcrypt = require('./signup.js');
 
-import { connectToDatabase } from '../../../lib-db/db.js';
+const secret = process.env.NEXTAUTH_SECRET;
 
-const options = {
+export const authOptions = {
     session: {
-        jwt: true
+        jwt: true,
     },
+    secret: secret,
     providers: [
         CredentialsProvider({
             async authorize(credentials) {
-
                 let client;
 
                 try {
                     client = await connectToDatabase();
                 } catch (error) {
-                    throw new Error('Database connection failed.')
+                    throw new Error('Database connection failed.');
                 }
 
                 const collection = client.db('user-auth').collection('users');
@@ -26,7 +26,6 @@ const options = {
 
                 if (!user) {
                     client.close();
-                    // redirect to 404 page
                     throw new Error('No user found.');
                 }
 
@@ -38,12 +37,10 @@ const options = {
                 }
 
                 client.close();
-                return { email: user.email };
+                return { email: user.email, name: null, image: null};
             }
         })
     ]
-}
+};
 
-const handler = NextAuth(options);
-
-export default handler;
+export default NextAuth(authOptions);
