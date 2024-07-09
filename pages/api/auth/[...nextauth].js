@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDatabase } from '../../../lib-db/db.js';
-const bcrypt = require('./signup.js');
+import { bcrypt } from './signup.js';
 
 const secret = process.env.NEXTAUTH_SECRET;
 
@@ -37,7 +37,7 @@ export const authOptions = {
                 }
 
                 client.close();
-                return { email: user.email, name: null, image: null};
+                return { email: user.email, name: null, image: null };
             }
         })
     ]

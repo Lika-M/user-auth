@@ -1,5 +1,4 @@
-const bcrypt = require('bcrypt');
-module.exports = bcrypt;
+import bcrypt from "bcrypt";
 
 import { checkUserExists, connectToDatabase, insertUserCredentials } from "../../../lib-db/db.js";
 
@@ -61,3 +60,4 @@ async function handler(req, res) {
 }
 
 export default handler;
+export { bcrypt };
