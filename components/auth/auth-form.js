@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 import { createUser } from '../../lib-db/util';
 import classes from './auth-form.module.css';
 
 function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
+  const router = useRouter();
 
   const inputEmail = useRef();
   const inputPassword = useRef();
@@ -30,6 +32,7 @@ function AuthForm() {
     if (!isLogin) {
       try {
         await createUser(userData);
+        router.replace('/');
       } catch (error) {
         console.log(error);
       }
@@ -43,7 +46,9 @@ function AuthForm() {
           redirect: false
         });
 
-        console.log(result);
+        if (!result.error) {
+          router.replace('/profile');
+        }
 
       } catch (error) {
         console.log(error)
